@@ -17,6 +17,22 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>Edt</servlet-name>
-    <url-pattern>/Edt</url-pattern>
+    <url-pattern>/edt</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Recherche</display-name>
+    <servlet-name>Recherche</servlet-name>
+    <servlet-class>Recherche</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Recherche</servlet-name>
+    <url-pattern>/recherche</url-pattern>
+  </servlet-mapping>
+  <jsp-config>
+		<jsp-property-group>
+			<url-pattern>*.jsp</url-pattern>
+			<include-prelude>/WEB-INF/taglibs.jsp</include-prelude>
+		</jsp-property-group>
+	</jsp-config>
 </web-app>
