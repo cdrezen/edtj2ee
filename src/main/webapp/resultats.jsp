@@ -20,7 +20,7 @@
 
 	ArrayList<Evenement> resultats = (ArrayList<Evenement>) attr;
 	%>
-	<h3>Resultats de la recherche "${param.recherche}"</h3>
+	<h3>Resultats de la recherche "${param.titre}"</h3>
 	<table>
 		<tr>
 			<th>Titre</th>
@@ -30,18 +30,26 @@
 			<th>Salle</th>
 			<th>Professeur</th>
 			<th>Remarque</th>
+			<th>Edition</th>
 		</tr>
-		<c:forEach items="${cours}" var="sceance">
+		<c:forEach items="${resultats}" var="sceance">
 		<tr>
 			<th>${sceance.titre}</th>
 			<fmt:parseDate value="${sceance.debut}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate" type="both" />
 			<th><fmt:formatDate type = "both" value = "${parsedDate}" /></th>
 			<fmt:parseDate value="${sceance.fin}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate" type="both" />
 			<th><fmt:formatDate type = "both" value = "${parsedDate}" /></th>
-			<th></th>
-			<th></th>
-			<th></th>
-			<th></th>
+			<th>${sceance.promotion}</th>
+			<th>${sceance.salle}</th>
+			<th>${sceance.professeur}</th>
+			<th>${sceance.description}</th>
+			<th>
+			<form id="edition_form" action="edition">
+			<input type="hidden" id="_id" name ="id" value="${sceance.id}" >
+			<input type="submit" value="Supprimer" name="suppr" formmethod="POST" />
+			<input type="submit" value="Modifier" name="edit" formmethod="GET" />
+	        </form>
+			</th>
 		</tr>
 	    </c:forEach>
 		<%-- <%

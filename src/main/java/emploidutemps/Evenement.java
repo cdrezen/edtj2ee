@@ -127,7 +127,7 @@ public class Evenement implements java.io.Serializable {
 		this.fin = fin;
 	}
 
-	public boolean estInclu(LocalDateTime date) {
+	public boolean estIncluse(LocalDateTime date) {
 		return !(date.isBefore(debut) || date.isAfter(fin));
 	}
 

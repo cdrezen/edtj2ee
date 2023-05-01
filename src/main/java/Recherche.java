@@ -31,11 +31,11 @@ public class Recherche extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		Object attr = request.getParameter("recherche");
+		Object attr = request.getParameter("titre");
 		if(attr == null) throw new RuntimeException("Echec de la récupéreration du search string dans la requete.");
-		String recherche = (String)attr;
+		String titre = (String)attr;
 		
-		if(recherche.isBlank()) return;//TODO: ajouter d'autre conditions de refus
+		if(titre.isBlank()) return;//TODO: ajouter d'autre conditions de refus
 		
 		attr = getServletContext().getAttribute("cours");
 	    if(attr == null) throw new RuntimeException("Echec de la récupéreration des données dans l'attribut.");
@@ -44,7 +44,7 @@ public class Recherche extends HttpServlet {
 	    
 	    for(Evenement sceance : cours) 
 	    {
-	    	if(sceance.getTitre().contains(recherche)) resultats.add(sceance);
+	    	if(sceance.getTitre().contains(titre)) resultats.add(sceance);
 	    }
 	    
 	    RequestDispatcher rd = request.getRequestDispatcher("resultats.jsp"); 

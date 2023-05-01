@@ -67,8 +67,20 @@
 
 	<label for="start">Recherche:</label>
 	<form action="recherche" method="GET">
-		<input type="text" id="recherche_txt" name="recherche"> <input
-			type="submit" value="Envoyer" />
+		<input type="search" id="recherche_txt" name="recherche">
+		<input type="submit" value="Envoyer" />
+	</form>
+	<label for="requete">Rechercher/Modifier:</label>
+	<form id="ajoutrecherche_form">
+		<input type="text" id="titre_txt" name="titre" minlength="3" required>
+		<input type="text" id="promo_txt" name="promo">
+		<input type="text" id="salle_txt" name="salle">
+		<input type="text" id="prof_txt" name="prof">
+		<input type="text" id="desc_txt" name="desc">
+		<input type="datetime-local" id="date_debut" name="debut">
+		<input type="time" id="duree" name="duree">
+		<input type="submit" value="Ajouter" formaction="edition" name="ajout" formmethod="POST" />
+		<input type="submit" value="Rechercher" formaction="recherche" formmethod="GET" />
 	</form>
 </body>
 </html>
