@@ -39,26 +39,24 @@ public class Edition extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		if(!request.getParameterMap().containsKey("id")) return;// TODO: rediriger vers page edition
-		
-		out = response.getWriter();//dbg
+		//if(!request.getParameterMap().containsKey("id")) return;
 		
 		int id;
+		
 		Object attr = request.getParameter("id");
 		if(attr != null) id = Integer.parseInt((String)attr);
-		else return;// TODO: rediriger vers page erreur
+		else return;
 		
-		ArrayList<Evenement> cours = getEvenements();
-		
+		ArrayList<Evenement> cours = getEvenements();		
 		Evenement sceance = Evenement.trouverDepuisId(id, cours);
+		
+		if(sceance == null) return;
 		
 		request.setAttribute("sceance", sceance);
 		Duration duree = Duration.between(sceance.getDebut(), sceance.getFin());
 		request.setAttribute("duree", LocalTime.of(duree.toHoursPart(), duree.toMinutesPart()));
 		RequestDispatcher rd = request.getRequestDispatcher("edition.jsp");
 		rd.forward(request, response);
-		
-		
 	}
 
 	/**
@@ -68,13 +66,12 @@ public class Edition extends HttpServlet {
 		
 		enum modif { AJOUTER, MODIFIER, SUPPRIMER} ;
 		
-		int id = -1;
 		modif type_modif = null;
 		RequestDispatcher rd;
-		String nextpage = "edt";
+		
+		out = response.getWriter();
 		
 		///dbg
-		out = response.getWriter();
 		
 		Enumeration<String> params = request.getParameterNames(); 
 		while(params.hasMoreElements()){
@@ -87,51 +84,66 @@ public class Edition extends HttpServlet {
 		else if(request.getParameterMap().containsKey("ajout")) type_modif = modif.AJOUTER;
 		else if(request.getParameterMap().containsKey("edit")) type_modif = modif.MODIFIER;
 		
-		if(type_modif == null) return;// TODO: rediriger vers page erreur
+		if(type_modif == null) return;
+
+		Evenement nouveau_cours = null;
+		int id = -1;
+		int index = -1;
 		
-		ArrayList<Evenement> cours = getEvenements();
+		if(type_modif == modif.AJOUTER || type_modif == modif.MODIFIER) 
+		{
+			nouveau_cours = getParamsModif(request, type_modif == modif.AJOUTER);
+			
+			if(nouveau_cours == null)
+			{
+				out.println("Parametres incorrectes.");
+				return;
+			}
+			
+			id = nouveau_cours.getId();
+		}
+		else // cas SUPPRIMER
+		{
+			Object attr = request.getParameter("id");
+			
+			if(attr == null) 
+			{
+				out.println("Parametres incorrectes.");
+				return;
+			}
+			
+			id = Integer.parseInt((String)attr);
+		}
+		
+		ArrayList<Evenement> cours = getEvenements();	
+		
+		if(type_modif == modif.SUPPRIMER || type_modif == modif.MODIFIER) 
+		{
+			index = Evenement.trouverIndexDepuisId(id, cours);
+			if(index == -1)
+			{
+				out.println("Impossible de trouver l'évenement à modifier.");
+				return;
+			}
+		}
 		
 		switch(type_modif) 
 		{
 		
 		case SUPPRIMER:
 		{
-			Object attr = request.getParameter("id");
-			if(attr != null) 
-			{
-				id = Integer.parseInt((String)attr);
-				
-				for(int i = 0; i < cours.size(); i++) 
-				{
-					if(cours.get(i).getId() == id)
-					{
-						cours.remove(i);
-						break;
-					}
-				}
-			}	
-			//else nextpage = TODO: rediriger vers page erreur
+			cours.remove(index);
 			break;
 		}
 		case AJOUTER:
 		{
-			Evenement nouveau_cours = getParamsModif(request, true);
-			if(nouveau_cours == null) break;
-			
 			cours.add(nouveau_cours);
 			break;
 		}
 			
 		case MODIFIER:
 		{
-			Evenement nouveau_cours = getParamsModif(request, false);
-			if(nouveau_cours == null) break;
-			
-			int i = Evenement.trouverIndexDepuisId(nouveau_cours.getId(), cours);
-			
-			if(i != -1) cours.set(i, nouveau_cours);
-			else out.println("Impossible de trouver l'évenement à modifier.");
-			
+			cours.set(index, nouveau_cours);
 			break;
 		}
 			
@@ -141,24 +153,13 @@ public class Edition extends HttpServlet {
 		}
 		
 		getServletContext().setAttribute("cours", cours);
-		
 		rd = request.getRequestDispatcher("edt");
 		rd.forward(request, response);
-		
-		doGet(request, response);
 	}
 	
 	private ArrayList<Evenement> getEvenements()
 	{
 		Object attr = getServletContext().getAttribute("cours");
-		
-		///dbg
-		Enumeration<String> params =getServletContext().getAttributeNames();
-		while(params.hasMoreElements()){
-			 String paramName = params.nextElement();
-			 out.println("Attribut Name - "+paramName);
-			}
-		//
 		
 	    if(attr == null) throw new RuntimeException("Echec de la récupéreration des données dans l'attribut.");
 	    return (ArrayList<Evenement>)attr;
