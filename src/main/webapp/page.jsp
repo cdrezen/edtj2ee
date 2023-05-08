@@ -17,7 +17,7 @@
 </head>
 <body>
 	Plage horraire : du ${plage_horraire[0]} au ${plage_horraire[1]}
-	
+
 	<table>
 		<tr>
 			<td>&nbsp;</td>
@@ -29,7 +29,7 @@
 			<th>Samedi</th>
 			<th>Dimanche</th>
 		</tr>
-		
+
 		<%--
 
 		/*DateTimeFormatter formatheure = DateTimeFormatter.ofPattern("HH:mm");
@@ -53,28 +53,59 @@
 			out.println("</tr>");
 		} */
 		--%>
-		
-		<c:forEach var="heure" begin="0" end="${nb_heure - 1}">		
+
+		<c:forEach var="heure" begin="0" end="${nb_heure - 1}">
 			<tr>
-				<th>${heure + heure_debut}h00</th>	
-				<c:forEach var="jour" begin="0" end="${nb_jour - 1}">	
+				<th>${heure + heure_debut}h00</th>
+				<c:forEach var="jour" begin="0" end="${nb_jour - 1}">
 					<c:set var="index" value="${squelette[jour][heure]}" />
-					<td>${cours[index].titre}</td>	
+					<td>${cours[index].titre}</td>
 				</c:forEach>
-			</tr>		
+			</tr>
 		</c:forEach>
+
 	</table>
-	<label for="requete">Rechercher/Modifier:</label>
-	<form id="ajoutrecherche_form">
-		<input type="text" id="titre_txt" name="titre" minlength="3" required>
-		<input type="text" id="promo_txt" name="promo">
-		<input type="text" id="salle_txt" name="salle">
-		<input type="text" id="prof_txt" name="prof">
-		<input type="text" id="desc_txt" name="desc">
-		<input type="datetime-local" id="date_debut" name="debut" value="${plage_horraire[0]}">
-		<input type="time" id="duree" name="duree" value="01:00">
-		<input type="submit" value="Ajouter" formaction="edition" name="ajout" formmethod="POST" />
-		<input type="submit" value="Rechercher" formaction="recherche" formmethod="GET" />
+	<form id="edition_form">
+		<h4>Rechercher/Modifier:</h4>
+		<fieldset>
+			<legend>Informations</legend>
+			<p>
+				<label for="titre">Titre<abbr title="required">*</abbr></label> <input
+					type="text" id="titre_txt" name="titre" placeholder="Chimie"
+					minlength="3" required>
+			</p>
+			<p>
+				<label for="promo">Promotion</label> <input type="text"
+					id="promo_txt" placeholder="L3 Info" name="promo">
+			</p>
+			<p>
+				<label for="salle">Salle</label> <input type="text" id="salle_txt"
+					placeholder="Amphi A" name="salle">
+			</p>
+			<p>
+				<label for="prof">Professeur</label> <input type="text"
+					id="prof_txt" placeholder="Sabine" name="prof">
+			</p>
+			<p>
+				<label for="desc">Description/Remarque</label>
+				<textarea id="desc_txt" placeholder="c'est un cours de chimie" name="desc"></textarea>
+			</p>
+		</fieldset>
+		<fieldset>
+		<legend>Horaires</legend>
+			<p>
+			<label for="debut">Début de l'evenement</label>
+			<input type="datetime-local" id="date_debut" name="debut" value="${plage_horraire[0]}">
+			</p>
+			<p>
+			<label for="duree">Durée de l'evenement</label>
+			<input type="time" id="duree" name="duree" value="01:00">
+			</p>
+		</fieldset>
+		<div style="text-align:right;margin:1em;">
+			<input type="submit" value="Ajouter" formaction="edition" name="ajout" formmethod="POST" />
+			<input type="submit" value="Rechercher" formaction="recherche" formmethod="GET" />
+		</div>
 	</form>
 </body>
 </html>

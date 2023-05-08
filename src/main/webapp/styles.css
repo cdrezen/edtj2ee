@@ -11,3 +11,42 @@ table {
       border: 1px solid rgb(190,190,190);
       padding: 10px 20px;
     }
+
+form {
+    border: 1px solid #CCC;
+    border-radius: 1em;
+    padding:0.4em;
+    width:50%;
+}
+
+
+ fieldset
+{ 
+	margin: 1em;
+	/* display:inline-block;
+	vertical-align:top; */
+}
+
+/*
+label, form input, form textarea {
+  display: table-cell;
+  margin:1em;
+} */
+
+form label
+{
+	flex:1;
+	margin-right:1em;
+}
+
+form input, form textarea
+{
+	flex:2;
+}
+
+form p
+{
+/* 	display: table-row; */
+display:flex;
+justify-content: flex-end;
+}
