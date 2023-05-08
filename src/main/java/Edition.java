@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Map;
@@ -36,8 +38,27 @@ public class Edition extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		
+		if(!request.getParameterMap().containsKey("id")) return;// TODO: rediriger vers page edition
+		
+		out = response.getWriter();//dbg
+		
+		int id;
+		Object attr = request.getParameter("id");
+		if(attr != null) id = Integer.parseInt((String)attr);
+		else return;// TODO: rediriger vers page erreur
+		
+		ArrayList<Evenement> cours = getEvenements();
+		
+		Evenement sceance = Evenement.trouverDepuisId(id, cours);
+		
+		request.setAttribute("sceance", sceance);
+		Duration duree = Duration.between(sceance.getDebut(), sceance.getFin());
+		request.setAttribute("duree", LocalTime.of(duree.toHoursPart(), duree.toMinutesPart()));
+		RequestDispatcher rd = request.getRequestDispatcher("edition.jsp");
+		rd.forward(request, response);
+		
+		
 	}
 
 	/**
@@ -52,6 +73,7 @@ public class Edition extends HttpServlet {
 		RequestDispatcher rd;
 		String nextpage = "edt";
 		
+		///dbg
 		out = response.getWriter();
 		
 		Enumeration<String> params = request.getParameterNames(); 
@@ -59,20 +81,25 @@ public class Edition extends HttpServlet {
 		 String paramName = params.nextElement();
 		 out.println("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
 		}
+		///
 		
 		if(request.getParameterMap().containsKey("suppr")) type_modif = modif.SUPPRIMER;
-		if(request.getParameterMap().containsKey("ajout")) type_modif = modif.AJOUTER;
-		if(request.getParameterMap().containsKey("edit")) type_modif = modif.MODIFIER;
+		else if(request.getParameterMap().containsKey("ajout")) type_modif = modif.AJOUTER;
+		else if(request.getParameterMap().containsKey("edit")) type_modif = modif.MODIFIER;
+		
+		if(type_modif == null) return;// TODO: rediriger vers page erreur
+		
+		ArrayList<Evenement> cours = getEvenements();
 		
 		switch(type_modif) 
 		{
+		
 		case SUPPRIMER:
 		{
 			Object attr = request.getParameter("id");
 			if(attr != null) 
 			{
 				id = Integer.parseInt((String)attr);
-				ArrayList<Evenement> cours = getEvenements();
 				
 				for(int i = 0; i < cours.size(); i++) 
 				{
@@ -82,10 +109,8 @@ public class Edition extends HttpServlet {
 						break;
 					}
 				}
-				
-				getServletContext().setAttribute("cours", cours);
 			}	
-			//else nextpage = "edition."
+			//else nextpage = TODO: rediriger vers page erreur
 			break;
 		}
 		case AJOUTER:
@@ -93,37 +118,29 @@ public class Edition extends HttpServlet {
 			Evenement nouveau_cours = getParamsModif(request, true);
 			if(nouveau_cours == null) break;
 			
-			ArrayList<Evenement> cours = getEvenements();
 			cours.add(nouveau_cours);
-			getServletContext().setAttribute("cours", cours);
 			break;
 		}
 			
 		case MODIFIER:
 		{
-			Evenement nouveau_cours = getParamsModif(request, true);
+			Evenement nouveau_cours = getParamsModif(request, false);
 			if(nouveau_cours == null) break;
 			
-			ArrayList<Evenement> cours = getEvenements();
+			int i = Evenement.trouverIndexDepuisId(nouveau_cours.getId(), cours);
 			
-			for(int i = 0; i < cours.size(); i++) 
-			{
-				if(cours.get(i).getId() == nouveau_cours.getId())
-				{
-					cours.set(i, nouveau_cours);
-					break;
-				}
-			}
+			if(i != -1) cours.set(i, nouveau_cours);
+			else out.println("Impossible de trouver l'évenement à modifier.");
 			
-			getServletContext().setAttribute("cours", cours);
 			break;
 		}
 			
 		default: 
-			//doGet(request, response);
 			break;
 		
 		}
+		
+		getServletContext().setAttribute("cours", cours);
 		
 		rd = request.getRequestDispatcher("edt");
 		rd.forward(request, response);
@@ -162,7 +179,7 @@ public class Edition extends HttpServlet {
 		if(!ajout) 
 		{
 			attr = request.getParameter("id");
-			if(attr != null) id = (int)attr;
+			if(attr != null) id = Integer.parseInt((String)attr);
 		}
 		
 		attr = request.getParameter("titre");

@@ -47,7 +47,7 @@
 			<form id="edition_form" action="edition">
 			<input type="hidden" id="_id" name ="id" value="${sceance.id}" >
 			<input type="submit" value="Supprimer" name="suppr" formmethod="POST" />
-			<input type="submit" value="Modifier" name="edit" formmethod="GET" />
+			<input type="submit" value="Modifier" formaction="edition" formmethod="GET" />
 	        </form>
 			</th>
 		</tr>

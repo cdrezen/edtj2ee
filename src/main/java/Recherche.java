@@ -45,6 +45,7 @@ public class Recherche extends HttpServlet {
 	    for(Evenement sceance : cours) 
 	    {
 	    	if(sceance.getTitre().contains(titre)) resultats.add(sceance);
+	    	// TODO : rechercher avec les autres parametres
 	    }
 	    
 	    RequestDispatcher rd = request.getRequestDispatcher("resultats.jsp"); 

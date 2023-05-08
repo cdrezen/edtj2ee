@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 //import jakarta.annotation.Id;
 //import jakarta.annotation.Generated;
+import java.util.ArrayList;
 
 public class Evenement implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
@@ -149,5 +150,31 @@ public class Evenement implements java.io.Serializable {
 
 	public long getDureeHeures() {
 		return debut.until(fin, ChronoUnit.HOURS);
+	}
+	
+	public static Evenement trouverDepuisId(int id, ArrayList<Evenement> cours)
+	{	
+		for(Evenement sceance : cours)
+		{
+			int id_courante = sceance.getId();
+			if(id_courante == id) {
+				return sceance;
+			}
+		}
+		
+		return null;
+	}
+
+	public static int trouverIndexDepuisId(int id, ArrayList<Evenement> cours)
+	{	
+		for(int i = 0; i < cours.size(); i++)
+		{
+			int id_courante = cours.get(i).getId();
+			if(id_courante == id) {
+				return i;
+			}
+		}
+		
+		return -1;
 	}
 }

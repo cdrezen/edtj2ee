@@ -41,10 +41,14 @@ public class Edt extends HttpServlet {
 		
 		super.init(config);
 		
-		Evenement cours1 = new Evenement("anglais", LocalDateTime.parse("2023-05-01T08:00"),
-				LocalDateTime.parse("2023-05-01T10:00"));
-		Evenement cours2 = new Evenement("plage", LocalDateTime.parse("2023-05-03T10:00"),
-				LocalDateTime.parse("2023-05-03T12:00"));
+		LocalDateTime premierjour_semaine = LocalDate.now().with(ChronoField.DAY_OF_WEEK, 1).atTime(8, 0);
+		LocalDateTime autrejourplustard = premierjour_semaine.plusDays(2).plusHours(5);
+		
+		Evenement cours1 = new Evenement("anglais", premierjour_semaine,
+				premierjour_semaine.plusHours(2));
+		
+		Evenement cours2 = new Evenement("plage", autrejourplustard,
+				autrejourplustard.plusHours(1));
 		
 		cours = new ArrayList<Evenement>(List.of(cours1, cours2));
 		
