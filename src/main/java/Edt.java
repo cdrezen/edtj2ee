@@ -109,6 +109,7 @@ public class Edt extends HttpServlet {
 		attr = request.getParameter("jours");
 		if(attr != null) 
 		{
+			out.println("jours:" +jours);///
 			jours = Integer.parseInt((String)attr);
 			if (jours > MAX_NB_JOUR_PLAGE) jours = NB_JOUR_PLAGE;
 		}
@@ -117,6 +118,7 @@ public class Edt extends HttpServlet {
 		if(attr != null)
 		{
 			heures = Integer.parseInt((String)attr);
+			out.println("heures:"+heures);///
 			if(heures > MAX_NB_HEURE_PLAGE) heures = NB_HEURE_PLAGE;
 		}
 		
@@ -124,6 +126,7 @@ public class Edt extends HttpServlet {
 		if(attr != null) 
 		{
 			String date = (String)attr;
+			out.println(date);///
 			debut = LocalDateTime.parse(date);
 			
 			if(precedante)

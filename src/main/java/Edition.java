@@ -153,8 +153,7 @@ public class Edition extends HttpServlet {
 		}
 		
 		getServletContext().setAttribute("cours", cours);
-		rd = request.getRequestDispatcher("edt");
-		rd.forward(request, response);
+		response.sendRedirect("edt");
 	}
 	
 	private ArrayList<Evenement> getEvenements()
