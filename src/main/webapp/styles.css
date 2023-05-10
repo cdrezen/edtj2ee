@@ -2,21 +2,31 @@
 
 table {
       border-collapse: collapse;
-      border: 2px solid rgb(200,200,200);
-      letter-spacing: 1px;
+      border: 0.2em solid rgb(200,200,200);
       font-size: 0.8rem;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     td, th {
       border: 1px solid rgb(190,190,190);
-      padding: 10px 20px;
+      padding: 1em 2em;
     }
 
-form {
+form.edit {
     border: 1px solid #CCC;
     border-radius: 1em;
     padding:0.4em;
     width:50%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
+}
+
+form.plage
+{
+	text-align: center;
+	line-height:1.8em;
 }
 
 

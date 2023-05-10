@@ -6,7 +6,7 @@ import java.time.temporal.ChronoUnit;
 //import jakarta.annotation.Generated;
 import java.util.ArrayList;
 
-public class Evenement implements java.io.Serializable {
+public class Evenement extends emploidutemps.Plage implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static int newid = 0;
 
@@ -27,45 +27,37 @@ public class Evenement implements java.io.Serializable {
 	}
 
 	public Evenement(String titre, LocalDateTime debut, LocalDateTime fin) {
-		super();
+		super(debut, fin);
 		this.id = newid++;
 		this.titre = titre;
-		this.debut = debut;
-		this.fin = fin;
 	}
 	
 	public Evenement(int id, String titre, LocalDateTime debut, LocalDateTime fin) {
-		super();
+		super(debut, fin);
 		this.id = id;
 		this.titre = titre;
-		this.debut = debut;
-		this.fin = fin;
 	}
 
 	public Evenement(String titre, String promotion, String salle, String professeur, String description,
 			LocalDateTime debut, LocalDateTime fin) {
-		super();
+		super(debut, fin);
 		this.id = newid++;
 		this.titre = titre;
 		this.promotion = promotion;
 		this.salle = salle;
 		this.professeur = professeur;
 		this.description = description;
-		this.debut = debut;
-		this.fin = fin;
 	}
 	
 	public Evenement(int id, String titre, String promotion, String salle, String professeur, String description,
 			LocalDateTime debut, LocalDateTime fin) {
-		super();
+		super(debut, fin);
 		this.id = id;
 		this.titre = titre;
 		this.promotion = promotion;
 		this.salle = salle;
 		this.professeur = professeur;
 		this.description = description;
-		this.debut = debut;
-		this.fin = fin;
 	}
 
 	public int getId() {
@@ -110,46 +102,6 @@ public class Evenement implements java.io.Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public LocalDateTime getDebut() {
-		return debut;
-	}
-
-	public void setDebut(LocalDateTime debut) {
-		this.debut = debut;
-	}
-
-	public LocalDateTime getFin() {
-		return fin;
-	}
-
-	public void setFin(LocalDateTime fin) {
-		this.fin = fin;
-	}
-
-	public boolean estIncluse(LocalDateTime date) {
-		return !(date.isBefore(debut) || date.isAfter(fin));
-	}
-
-	public boolean aDebutIncluDans(LocalDateTime debutInterval, LocalDateTime finInterval) {
-		return !(debut.isBefore(debutInterval) || debut.isAfter(finInterval));
-	}
-
-	public boolean aFinIncluDans(LocalDateTime debutInterval, LocalDateTime finInterval) {
-		return !(fin.isBefore(debutInterval) || fin.isAfter(finInterval));
-	}
-
-	public boolean estIncluDans(LocalDateTime debutInterval, LocalDateTime finInterval) {
-		return (aDebutIncluDans(debutInterval, finInterval) || aFinIncluDans(debutInterval, finInterval));
-	}
-
-	public long getDureeMinutes() {
-		return debut.until(fin, ChronoUnit.MINUTES);
-	}
-
-	public long getDureeHeures() {
-		return debut.until(fin, ChronoUnit.HOURS);
 	}
 	
 	public static Evenement trouverDepuisId(int id, ArrayList<Evenement> cours)

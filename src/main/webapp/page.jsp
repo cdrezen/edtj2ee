@@ -16,9 +16,19 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-	Plage horraire : du ${plage_horraire[0]} au ${plage_horraire[1]}
-
-	<table>
+	<form id="plage_form" class="plage" action="edt" method="GET">
+	    <input type="submit" value="<" name="prec" />
+	    <input type="datetime-local" id="debut_plage" name="debut" value="${plage_horraire[0]}" onchange="this.form.submit()">
+	    au
+	    <input type="datetime-local" id="fin_plage" name="fin" value="${plage_horraire[1]}" disabled>
+	    <input type="submit" value=">" name="suiv" />
+	    <br>sur
+	    <input type="number" name="jours" value="7" style="width:3em;" onchange="this.form.submit()"/>
+	    jours de
+	    <input type="number" name="heures" value="15" style="width:3em;" onchange="this.form.submit()"/>
+	    heures.
+	</form>
+	<table id="edt_table">
 		<tr>
 			<td>&nbsp;</td>
 			<th>Lundi</th>
@@ -65,7 +75,7 @@
 		</c:forEach>
 
 	</table>
-	<form id="edition_form">
+	<form id="edition_form" class="edit">
 		<h4>Rechercher/Modifier:</h4>
 		<fieldset>
 			<legend>Informations</legend>
