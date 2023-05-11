@@ -57,7 +57,7 @@ public class Edt extends HttpServlet {
 				premierjour_semaine, premierjour_semaine.plusHours(2));
 		
 		Evenement cours2 = new Evenement("plage", "L3 Info", "Boucan", "Aquaman", "", autrejourplustard,
-				autrejourplustard.plusHours(1));
+				autrejourplustard.plusHours(2));
 		
 		cours = new ArrayList<Evenement>(List.of(cours1, cours2));
 		
@@ -175,36 +175,24 @@ public class Edt extends HttpServlet {
 			}
 
 			byte jour = (byte)ChronoUnit.DAYS.between(debut, intersection.getDebut());
-			byte heure = (byte)ChronoUnit.HOURS.between(debut.plusDays(jour), intersection.getDebut());
+			byte heure = (byte)ChronoUnit.HOURS.between(debut.plusDays(jour), intersection.getDebut());				
 			
-			/*
-			 * byte heure_debut = (byte)plage.getHeureDebut();
-			 * 
-			 * for(int h = 0; h < intersection.getDureeHeures(); h++) { if (heure >
-			 * heuresJourMax - 1) {
-			 * 
-			 * }
-			 * 
-			 * if((heure_debut + heure) % 24 == 0) jour++;
-			 * 
-			 * if (jour > dureeJours - 1) break;
-			 * 
-			 * squelette_table[jour][heure] = i; heure++; }
-			 */
-
-			for (int iheures = 0; iheures <  intersection.getDureeHeures(); iheures ++) {
-				
-				//duree superieure à l'affichage: peut arriver sur le jour suivant
-				if (heure > heuresJourMax - 1) {
-					iheures += 24 - heuresJourMax;
+			for (int compte = 0; compte < intersection.getDureeHeures(); compte++)
+			{				
+				if (heure < heuresJourMax) 
+				{
+					squelette_table[jour][heure] = i;
+					heure++;
+				}
+				else
+				{// duree superieure à l'affichage: peut arriver sur le jour suivant
+					compte += 24 - heuresJourMax - 1;
 					heure = 0;
+					
 					jour++;
 					if (jour > dureeJours - 1)
 						break;
 				}
-				
-				squelette_table[jour][heure] = i;
-				heure++;
 			}
 		}
 		
