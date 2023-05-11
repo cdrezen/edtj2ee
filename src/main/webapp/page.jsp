@@ -1,13 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 
-<%-- <%@ page import="emploidutemps.Evenement"%>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="java.time.LocalDate"%>
-<%@ page import="java.time.LocalDateTime"%>
-<%@ page import="java.time.format.DateTimeFormatter"%>
-<%@ page import="java.time.temporal.ChronoField"%> --%>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,58 +11,35 @@
 <body>
 	<form id="plage_form" class="plage" action="edt" method="GET">
 	    <input type="submit" value="<" name="prec" />
-	    <input type="datetime-local" id="debut_plage" name="debut" value="${plage_horraire[0]}" onchange="this.form.submit()">
+	    <input type="datetime-local" id="debut_plage" name="debut" value="${plage.debut}" onchange="this.form.submit()">
 	    au
-	    <input type="datetime-local" id="fin_plage" name="fin" value="${plage_horraire[1]}" disabled>
+	    <input type="datetime-local" id="fin_plage" name="fin" value="${plage.fin}" disabled>
 	    <input type="submit" value=">" name="suiv" />
 	    <br>sur
-	    <input type="number" name="jours" value="7" style="width:3em;" onchange="this.form.submit()"/>
+	    <input type="number" name="jours" value="${param.jours != null ? param.jours : 7}" min="1" max="21" style="width:3em;" onchange="this.form.submit()"/>
 	    jours de
-	    <input type="number" name="heures" value="15" style="width:3em;" onchange="this.form.submit()"/>
+	    <input type="number" name="heures" value="${param.heures != null ? param.heures : 15}" min="1" max="24" style="width:3em;" onchange="this.form.submit()"/>
 	    heures.
 	</form>
 	<table id="edt_table">
 		<tr>
 			<td>&nbsp;</td>
-			<th>Lundi</th>
-			<th>Mardi</th>
-			<th>Mercredi</th>
-			<th>Jeudi</th>
-			<th>Vendredi</th>
-			<th>Samedi</th>
-			<th>Dimanche</th>
+			<c:set var="jours" value="#{['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']}"/>
+			<c:forEach var="i" begin="${plage.premierJourIndex - 1}" end="${plage.dureeJours - 1 + plage.premierJourIndex - 1}">
+			    <th>${jours[i % 7]}</th>
+			</c:forEach>
 		</tr>
 
-		<%--
-
-		/*DateTimeFormatter formatheure = DateTimeFormatter.ofPattern("HH:mm");
-
-		for (int iheure = 7; iheure <= 21; iheure++) {
-			jourheure = jourheure.withHour(iheure);
-			out.println("<tr><th>" + jourheure.format(formatheure) + "</th>");
-
-			for (int ijour = 1; ijour <= 7; ijour++) {
-				String contenu = "&nbsp;";
-
-				Object index = squelette_table[ijour - 1][iheure - 7];
-
-				if (index != null) {
-			contenu = cours.get((byte) index).getTitre();
-				}
-
-				out.println("<td>" + contenu + "</td>");
-				jourheure = jourheure.plusDays(1);
-			}
-			out.println("</tr>");
-		} */
-		--%>
-
-		<c:forEach var="heure" begin="0" end="${nb_heure - 1}">
+		<c:forEach var="heure" begin="0" end="${plage.heuresJour - 1}">
 			<tr>
-				<th>${heure + heure_debut}h00</th>
-				<c:forEach var="jour" begin="0" end="${nb_jour - 1}">
+				<th>${heure + plage.heureDebut}h00</th>
+				<c:forEach var="jour" begin="0" end="${plage.dureeJours - 1}">
 					<c:set var="index" value="${squelette[jour][heure]}" />
-					<td>${cours[index].titre}</td>
+					<td>
+					<b>${cours[index].titre}</b>
+					<br><i>${cours[index].salle}</i>
+					<br>${cours[index].professeur}
+					</td>
 				</c:forEach>
 			</tr>
 		</c:forEach>
@@ -105,7 +75,7 @@
 		<legend>Horaires</legend>
 			<p>
 			<label for="debut">Début de l'evenement</label>
-			<input type="datetime-local" id="date_debut" name="debut" value="${plage_horraire[0]}">
+			<input type="datetime-local" id="date_debut" name="debut" value="${plage.debut}">
 			</p>
 			<p>
 			<label for="duree">Durée de l'evenement</label>

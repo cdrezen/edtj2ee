@@ -53,10 +53,10 @@ public class Edt extends HttpServlet {
 		LocalDateTime premierjour_semaine = LocalDate.now().with(ChronoField.DAY_OF_WEEK, 1).atTime(8, 0);
 		LocalDateTime autrejourplustard = premierjour_semaine.plusDays(2).plusHours(5);
 		
-		Evenement cours1 = new Evenement("anglais", premierjour_semaine,
-				premierjour_semaine.plusHours(2));
+		Evenement cours1 = new Evenement("anglais", "L3 Info", "Amphi A", "Jhonny", "",
+				premierjour_semaine, premierjour_semaine.plusHours(2));
 		
-		Evenement cours2 = new Evenement("plage", autrejourplustard,
+		Evenement cours2 = new Evenement("plage", "L3 Info", "Boucan", "Aquaman", "", autrejourplustard,
 				autrejourplustard.plusHours(1));
 		
 		cours = new ArrayList<Evenement>(List.of(cours1, cours2));
@@ -84,11 +84,9 @@ public class Edt extends HttpServlet {
 
 		Object[][] squelette_table = genererSquelette(plage, null);
 		
+		
 		request.setAttribute("squelette", squelette_table);
-		request.setAttribute("plage_horraire", new LocalDateTime[] {plage.getDebut(), plage.getFin()});
-		request.setAttribute("nb_jour", plage.getDuree().toDays());////
-		request.setAttribute("nb_heure", plage.getHeuresJour());
-		request.setAttribute("heure_debut", plage.getDebut().getHour());
+		request.setAttribute("plage", plage);
 		
 		RequestDispatcher rd = request.getRequestDispatcher("page.jsp");
 		rd.forward(request, response);
@@ -129,6 +127,8 @@ public class Edt extends HttpServlet {
 			out.println(date);///
 			debut = LocalDateTime.parse(date);
 			
+			if(heures + debut.getHour() > 24) heures = 24 - debut.getHour();
+			
 			if(precedante)
 				debut = debut.minusDays(jours);
 			else if(suivante)
@@ -138,23 +138,25 @@ public class Edt extends HttpServlet {
 		return new PlageJours(debut, jours, heures);
 	}
 	
+	//TODO: Adapter à un affichage par quart d'heures 
 	private Object[][] genererSquelette(PlageJours plage, Filtre[] filtres)
 	{	
 		LocalDateTime debut = plage.getDebut();
-		LocalDateTime fin = plage.getFin();
 		int dureeJours = (int)plage.getDuree().toDays();
-		int heuresJour = plage.getHeuresJour();
+		int heuresJourMax = plage.getHeuresJour();
 		
 		if(dureeJours < 1) return null;
 		
-		Object[][] squelette_table = new Object[dureeJours][heuresJour];
+		Object[][] squelette_table = new Object[dureeJours][heuresJourMax];
 		
 		for (int i = 0; i < cours.size(); i++) {
 
 			Evenement sceance = cours.get(i);
+			
+			Plage intersection = plage.getIntersection(sceance);
 
-			if (!sceance.estIncluDans(debut, fin))
-				continue;
+			//pas inclu dans la plage
+			if (intersection == null) continue;
 			
 			if(filtres != null) 
 			{
@@ -172,22 +174,37 @@ public class Edt extends HttpServlet {
 				if(!estRetenu) continue;
 			}
 
-			byte jour = (byte) (sceance.getDebut().getDayOfWeek().getValue() - 1);
-			byte heure = (byte) (sceance.getDebut().getHour() - debut.getHour());
-			out.println(jour + " " + heure + "=" + sceance.getDebut().getHour() +"-" + debut.getHour());//
-			//TODO: regeler pb heure superieur : peut etre du a heureJour mal init dans PlageJours
-			//retour de edition
+			byte jour = (byte)ChronoUnit.DAYS.between(debut, intersection.getDebut());
+			byte heure = (byte)ChronoUnit.HOURS.between(debut.plusDays(jour), intersection.getDebut());
+			
+			/*
+			 * byte heure_debut = (byte)plage.getHeureDebut();
+			 * 
+			 * for(int h = 0; h < intersection.getDureeHeures(); h++) { if (heure >
+			 * heuresJourMax - 1) {
+			 * 
+			 * }
+			 * 
+			 * if((heure_debut + heure) % 24 == 0) jour++;
+			 * 
+			 * if (jour > dureeJours - 1) break;
+			 * 
+			 * squelette_table[jour][heure] = i; heure++; }
+			 */
 
-			for (int minutes = 0; minutes < sceance.getDureeMinutes(); minutes += 60) {
+			for (int iheures = 0; iheures <  intersection.getDureeHeures(); iheures ++) {
 				
-				squelette_table[jour][heure] = (byte) i;
-				heure++;
-				if (heure > heuresJour - 1) {
+				//duree superieure à l'affichage: peut arriver sur le jour suivant
+				if (heure > heuresJourMax - 1) {
+					iheures += 24 - heuresJourMax;
 					heure = 0;
 					jour++;
-					if (jour > dureeJours)
+					if (jour > dureeJours - 1)
 						break;
 				}
+				
+				squelette_table[jour][heure] = i;
+				heure++;
 			}
 		}
 		
