@@ -50,9 +50,8 @@
 		<fieldset>
 			<legend>Informations</legend>
 			<p>
-				<label for="titre">Titre<abbr title="required">*</abbr></label> <input
-					type="text" id="titre_txt" name="titre" placeholder="Chimie"
-					minlength="3" required>
+				<label for="titre">Titre</label> <input
+					type="text" id="titre_txt" name="titre" placeholder="Chimie">
 			</p>
 			<p>
 				<label for="promo">Promotion</label> <input type="text"
@@ -76,10 +75,12 @@
 			<p>
 			<label for="debut">Début de l'evenement</label>
 			<input type="datetime-local" id="date_debut" name="debut" value="${plage.debut}">
+			<input type="checkbox" id="ch_debut" name="rdebut">
 			</p>
 			<p>
 			<label for="duree">Durée de l'evenement</label>
 			<input type="time" id="duree" name="duree" value="01:00">
+			<input type="checkbox" id="ch_duree" name="rduree">
 			</p>
 		</fieldset>
 		<div style="text-align:right;margin:1em;">

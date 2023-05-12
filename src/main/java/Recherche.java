@@ -8,9 +8,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.io.PrintWriter;
 
 import emploidutemps.Evenement;
+import emploidutemps.Filtre;
+import emploidutemps.ParamsRecherche;
 
 /**
  * Servlet implementation class Recherche
@@ -29,25 +35,26 @@ public class Recherche extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		Object attr = request.getParameter("titre");
-		if(attr == null) throw new RuntimeException("Echec de la récupéreration du search string dans la requete.");
-		String titre = (String)attr;
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		ParamsRecherche params = ParamsRecherche.of(request);
 		
-		if(titre.isBlank()) return;//TODO: ajouter d'autre conditions de refus
+		if(params == null) return;
 		
-		attr = getServletContext().getAttribute("cours");
+		Object attr = getServletContext().getAttribute("cours");
 	    if(attr == null) throw new RuntimeException("Echec de la récupéreration des données dans l'attribut.");
 	    ArrayList<Evenement> cours = (ArrayList<Evenement>)attr;
+	    
 	    ArrayList<Evenement> resultats = new ArrayList<Evenement>();
-	    
-	    for(Evenement sceance : cours) 
-	    {
-	    	if(sceance.getTitre().contains(titre)) resultats.add(sceance);
-	    	// TODO : rechercher avec les autres parametres
-	    }
-	    
+	
+		for (Evenement sceance : cours) 
+		{
+			if(sceance.match(params)) 
+			{
+				resultats.add(sceance);
+			}
+		}
+		
 	    RequestDispatcher rd = request.getRequestDispatcher("resultats.jsp"); 
 	    request.setAttribute("resultats", resultats);  
 	    rd.forward(request,response);

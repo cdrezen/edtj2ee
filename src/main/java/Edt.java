@@ -51,13 +51,13 @@ public class Edt extends HttpServlet {
 		super.init(config);
 		
 		LocalDateTime premierjour_semaine = LocalDate.now().with(ChronoField.DAY_OF_WEEK, 1).atTime(8, 0);
-		LocalDateTime autrejourplustard = premierjour_semaine.plusDays(2).plusHours(5);
+		LocalDateTime autrejourplustard = premierjour_semaine.plusDays(2).plusHours(12);
 		
 		Evenement cours1 = new Evenement("anglais", "L3 Info", "Amphi A", "Jhonny", "",
 				premierjour_semaine, premierjour_semaine.plusHours(2));
 		
 		Evenement cours2 = new Evenement("plage", "L3 Info", "Boucan", "Aquaman", "", autrejourplustard,
-				autrejourplustard.plusHours(2));
+				autrejourplustard.plusHours(23));
 		
 		cours = new ArrayList<Evenement>(List.of(cours1, cours2));
 		
@@ -139,7 +139,7 @@ public class Edt extends HttpServlet {
 	}
 	
 	//TODO: Adapter à un affichage par quart d'heures 
-	private Object[][] genererSquelette(PlageJours plage, Filtre[] filtres)
+	private Object[][] genererSquelette(PlageJours plage, ParamsRecherche paramsFiltres)
 	{	
 		LocalDateTime debut = plage.getDebut();
 		int dureeJours = (int)plage.getDuree().toDays();
@@ -158,21 +158,7 @@ public class Edt extends HttpServlet {
 			//pas inclu dans la plage
 			if (intersection == null) continue;
 			
-			if(filtres != null) 
-			{
-				boolean estRetenu = false;
-				
-				for(Filtre filtre : filtres)
-				{
-					if(filtre.valide(sceance)) 
-					{
-						estRetenu = true;
-						break;
-					}
-				}
-				
-				if(!estRetenu) continue;
-			}
+			if(paramsFiltres != null && !sceance.match(paramsFiltres)) continue;
 
 			byte jour = (byte)ChronoUnit.DAYS.between(debut, intersection.getDebut());
 			byte heure = (byte)ChronoUnit.HOURS.between(debut.plusDays(jour), intersection.getDebut());				
@@ -186,7 +172,7 @@ public class Edt extends HttpServlet {
 				}
 				else
 				{// duree superieure à l'affichage: peut arriver sur le jour suivant
-					compte += 24 - heuresJourMax - 1;
+					compte += 24 - (heure + 1);
 					heure = 0;
 					
 					jour++;

@@ -54,6 +54,11 @@ form input, form textarea
 	flex:2;
 }
 
+form input[type="checkbox"]
+{
+	flex:0;
+}
+
 form p
 {
 /* 	display: table-row; */
