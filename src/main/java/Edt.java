@@ -14,6 +14,8 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
+import org.xml.sax.SAXException;
+
 import emploidutemps.*;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletConfig;
@@ -48,13 +50,13 @@ public class Edt extends HttpServlet {
 		
 		super.init(config);
 		
-		stockage = new Stockage();
+		stockage = new Stockage(getServletContext().getRealPath("/"));
 		
 		try 
 		{
 			evenements = stockage.charger();
 		} 
-		catch (Exception e) 
+		catch (IOException | JAXBException | SAXException e) 
 		{
 			e.printStackTrace();
 		}
@@ -62,7 +64,7 @@ public class Edt extends HttpServlet {
 		if (evenements == null) 
 		{
 			LocalDateTime premierjour_semaine = LocalDate.now().with(ChronoField.DAY_OF_WEEK, 1).atTime(8, 0);
-			LocalDateTime autrejourplustard = premierjour_semaine.plusDays(4).plusHours(12);
+			LocalDateTime autrejourplustard = premierjour_semaine.plusDays(4).plusHours(6);
 
 			Evenement cours1 = new Evenement("anglais", "L3 Info", "Amphi A", "Jhonny", null, premierjour_semaine,
 					premierjour_semaine.plusHours(2));
@@ -88,7 +90,7 @@ public class Edt extends HttpServlet {
 		{
 			stockage.sauvegarder(evenements);
 		}
-		catch (IOException | JAXBException e) 
+		catch (IOException | JAXBException | SAXException e) 
 		{
 			e.printStackTrace();
 		}

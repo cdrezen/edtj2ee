@@ -40,8 +40,6 @@ public class Edition extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		//if(!request.getParameterMap().containsKey("id")) return;
-		
 		int id = -1;
 		
 		Object attr = request.getParameter("id");
