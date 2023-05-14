@@ -14,13 +14,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<%
-	Object attr = request.getAttribute("resultats");
-	if (attr == null) throw new Exception("Echec de la récupéreration des données dans l'attribut.");
-
-	ArrayList<Evenement> resultats = (ArrayList<Evenement>) attr;
-	%>
-	<h3>Resultats de la recherche "${param.titre}"</h3>
+	<h3 align="center">Resultats de la recherche "<small style="color:grey;"><i>${param}</i></small>"</h3>
 	<table>
 		<tr>
 			<th>Titre</th>
@@ -32,7 +26,8 @@
 			<th>Remarque</th>
 			<th>Edition</th>
 		</tr>
-		<c:forEach items="${resultats}" var="sceance">
+		<c:forEach items="${resultats.keySet()}" var="k">
+		<c:set var="sceance" value="${resultats[k]}" />
 		<tr>
 			<th>${sceance.titre}</th>
 			<fmt:parseDate value="${sceance.debut}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate" type="both" />
@@ -45,30 +40,13 @@
 			<th>${sceance.description}</th>
 			<th>
 			<form id="edition_form" action="edition">
-			<input type="hidden" id="_id" name ="id" value="${sceance.id}" >
+			<input type="hidden" id="_id" name ="id" value="${k}" >
 			<input type="submit" value="Supprimer" name="suppr" formmethod="POST" />
 			<input type="submit" value="Modifier" formaction="edition" formmethod="GET" />
 	        </form>
 			</th>
 		</tr>
 	    </c:forEach>
-		<%-- <%
-		DateTimeFormatter formatheure = DateTimeFormatter.ofPattern("'le' EEEE d MMMM uuuu '('dd/MM/uuuu G')' 'à' HH'h':mm ");
-		
-		for(Evenement sceance : resultats)
-		{
-			out.println("<tr>");
-			out.print("<td>" + sceance.getTitre() + "</td>");
-			out.print("<td>" + sceance.getDebut().format(formatheure) + "</td>");
-			out.print("<td>" + sceance.getFin().format(formatheure) + "</td>");
-			//TODO: ajouter les bons trucs une fois implementés
-			out.print("<td>" + "&nbsp;" + "</td>");
-			out.print("<td>" + "&nbsp;" + "</td>");
-			out.print("<td>" + "&nbsp;" + "</td>");
-			out.print("<td>" + "&nbsp;" + "</td>");
-			out.println("</tr>");
-		}
-		%> --%>
 	</table>
 </body>
 </html>

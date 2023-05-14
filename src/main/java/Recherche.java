@@ -12,9 +12,16 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.io.PrintWriter;
+import java.util.concurrent.ConcurrentMap;
 
 import emploidutemps.Evenement;
+import emploidutemps.EvenementMap;
 import emploidutemps.Filtre;
 import emploidutemps.ParamsRecherche;
 
@@ -43,15 +50,17 @@ public class Recherche extends HttpServlet {
 		
 		Object attr = getServletContext().getAttribute("cours");
 	    if(attr == null) throw new RuntimeException("Echec de la récupéreration des données dans l'attribut.");
-	    ArrayList<Evenement> cours = (ArrayList<Evenement>)attr;
+	    EvenementMap cours = (EvenementMap)attr;
 	    
-	    ArrayList<Evenement> resultats = new ArrayList<Evenement>();
+	    EvenementMap resultats = new EvenementMap(cours.size());
 	
-		for (Evenement sceance : cours) 
+		for (Entry<Integer, Evenement> entree : cours.entrySet()) 
 		{
+			Evenement sceance = entree.getValue();
+			
 			if(sceance.match(params)) 
 			{
-				resultats.add(sceance);
+				resultats.put(entree.getKey(), sceance);
 			}
 		}
 		

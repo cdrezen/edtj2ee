@@ -8,13 +8,17 @@ import java.time.temporal.ChronoUnit;
 //import jakarta.annotation.Generated;
 import java.util.ArrayList;
 
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+@XmlRootElement(name="Evenement")
 public class Evenement extends emploidutemps.Plage implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-	private static int newid = 0;
 
-	//@Id
-    //@Generated
-	int id;
 	String titre;
 	String promotion;
 	String salle;
@@ -23,32 +27,22 @@ public class Evenement extends emploidutemps.Plage implements java.io.Serializab
 
 	public Evenement() {
 		super();
-		this.id = newid++;
-	}
-	
-	public Evenement(int id, String titre, LocalDateTime debut, LocalDateTime fin) {
-		super(debut, fin);
-		this.id = id;
-		this.titre = titre;
+		
 	}
 	
 	public Evenement(String titre, LocalDateTime debut, LocalDateTime fin) {
-		this(newid++, titre, debut, fin);
-	}
-	
-	public Evenement(int id, String titre, LocalDateTime debut, Duration duree) {
-		super(debut, duree);
-		this.id = id;
+		super(debut, fin);
 		this.titre = titre;
 	}
 	
 	public Evenement(String titre, LocalDateTime debut, Duration duree) {
-		this(newid++, titre, debut, duree);
+		super(debut, duree);
+		this.titre = titre;
 	}
-	
-	public Evenement(int id, String titre, String promotion, String salle, String professeur, String description,
+
+	public Evenement(String titre, String promotion, String salle, String professeur, String description,
 			LocalDateTime debut, LocalDateTime fin) {
-		this(id, titre, debut, fin);
+		this(titre, debut, fin);
 		this.promotion = promotion;
 		this.salle = salle;
 		this.professeur = professeur;
@@ -56,28 +50,15 @@ public class Evenement extends emploidutemps.Plage implements java.io.Serializab
 	}
 
 	public Evenement(String titre, String promotion, String salle, String professeur, String description,
-			LocalDateTime debut, LocalDateTime fin) {
-		this(newid++, titre, promotion, salle, professeur, description, debut, fin);
-	}
-	
-	public Evenement(int id, String titre, String promotion, String salle, String professeur, String description,
 			LocalDateTime debut, Duration duree) {
-		this(id, titre, debut, duree);
+		this(titre, debut, duree);
 		this.promotion = promotion;
 		this.salle = salle;
 		this.professeur = professeur;
 		this.description = description;
 	}
-	
-	public Evenement(String titre, String promotion, String salle, String professeur, String description,
-			LocalDateTime debut, Duration duree) {
-		this(newid++, titre, promotion, salle, professeur, description, debut, duree);
-	}
 
-	public int getId() {
-		return id;
-	}
-
+	@XmlElement(required = true)
 	public String getTitre() {
 		return titre;
 	}
@@ -86,6 +67,7 @@ public class Evenement extends emploidutemps.Plage implements java.io.Serializab
 		this.titre = titre;
 	}
 
+	@XmlElement(required = false)
 	public String getPromotion() {
 		return promotion;
 	}
@@ -94,6 +76,7 @@ public class Evenement extends emploidutemps.Plage implements java.io.Serializab
 		this.promotion = promotion;
 	}
 
+	@XmlElement(required = false)
 	public String getSalle() {
 		return salle;
 	}
@@ -102,6 +85,7 @@ public class Evenement extends emploidutemps.Plage implements java.io.Serializab
 		this.salle = salle;
 	}
 
+	@XmlElement(required = false)
 	public String getProfesseur() {
 		return professeur;
 	}
@@ -110,6 +94,7 @@ public class Evenement extends emploidutemps.Plage implements java.io.Serializab
 		this.professeur = professeur;
 	}
 
+	@XmlElement(required = false)
 	public String getDescription() {
 		return description;
 	}
@@ -145,31 +130,5 @@ public class Evenement extends emploidutemps.Plage implements java.io.Serializab
 		
 		
 		return false;
-	}
-	
-	public static Evenement trouverDepuisId(int id, ArrayList<Evenement> cours)
-	{	
-		for(Evenement sceance : cours)
-		{
-			int id_courante = sceance.getId();
-			if(id_courante == id) {
-				return sceance;
-			}
-		}
-		
-		return null;
-	}
-
-	public static int trouverIndexDepuisId(int id, ArrayList<Evenement> cours)
-	{	
-		for(int i = 0; i < cours.size(); i++)
-		{
-			int id_courante = cours.get(i).getId();
-			if(id_courante == id) {
-				return i;
-			}
-		}
-		
-		return -1;
 	}
 }

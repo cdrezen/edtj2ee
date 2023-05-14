@@ -3,17 +3,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.xml.bind.JAXBException;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import emploidutemps.*;
 import jakarta.servlet.RequestDispatcher;
@@ -32,9 +31,8 @@ public class Edt extends HttpServlet {
 	private static final byte NB_HEURE_PLAGE = 15;//heures par jour
 	private static final byte MAX_NB_HEURE_PLAGE = 24;//heures par jour
 	
-	
-	ArrayList<Evenement> cours;
-	
+	Stockage stockage;
+	EvenementMap evenements;
 	PrintWriter out;
 
 	/**
@@ -50,18 +48,50 @@ public class Edt extends HttpServlet {
 		
 		super.init(config);
 		
-		LocalDateTime premierjour_semaine = LocalDate.now().with(ChronoField.DAY_OF_WEEK, 1).atTime(8, 0);
-		LocalDateTime autrejourplustard = premierjour_semaine.plusDays(2).plusHours(12);
+		stockage = new Stockage();
 		
-		Evenement cours1 = new Evenement("anglais", "L3 Info", "Amphi A", "Jhonny", "",
-				premierjour_semaine, premierjour_semaine.plusHours(2));
+		try 
+		{
+			evenements = stockage.charger();
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
 		
-		Evenement cours2 = new Evenement("plage", "L3 Info", "Boucan", "Aquaman", "", autrejourplustard,
-				autrejourplustard.plusHours(23));
+		if (evenements == null) 
+		{
+			LocalDateTime premierjour_semaine = LocalDate.now().with(ChronoField.DAY_OF_WEEK, 1).atTime(8, 0);
+			LocalDateTime autrejourplustard = premierjour_semaine.plusDays(4).plusHours(12);
+
+			Evenement cours1 = new Evenement("anglais", "L3 Info", "Amphi A", "Jhonny", null, premierjour_semaine,
+					premierjour_semaine.plusHours(2));
+
+			Evenement cours2 = new Evenement("plage", "L3 Info", "Salines", "Aquaman", null, autrejourplustard,
+					autrejourplustard.plusHours(6));
+
+			evenements = new EvenementMap();
+			evenements.put(cours1);
+			evenements.put(cours2);
+		}
 		
-		cours = new ArrayList<Evenement>(List.of(cours1, cours2));
+		this.getServletContext().setAttribute("cours", evenements);
+	}
+
+	
+	@Override
+	public void destroy() 
+	{
+		super.destroy();
 		
-		this.getServletContext().setAttribute("cours", cours);
+		try 
+		{
+			stockage.sauvegarder(evenements);
+		}
+		catch (IOException | JAXBException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -90,6 +120,16 @@ public class Edt extends HttpServlet {
 		
 		RequestDispatcher rd = request.getRequestDispatcher("page.jsp");
 		rd.forward(request, response);
+	}
+	
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
 	}
 	
 	private PlageJours getParams(HttpServletRequest request)
@@ -149,15 +189,16 @@ public class Edt extends HttpServlet {
 		
 		Object[][] squelette_table = new Object[dureeJours][heuresJourMax];
 		
-		for (int i = 0; i < cours.size(); i++) {
+		for (int k : evenements.keySet()) {
 
-			Evenement sceance = cours.get(i);
+			Evenement sceance = evenements.get(k);
 			
 			Plage intersection = plage.getIntersection(sceance);
 
 			//pas inclu dans la plage
 			if (intersection == null) continue;
 			
+			//TODO: ajouter à l'interface l'option de filtration
 			if(paramsFiltres != null && !sceance.match(paramsFiltres)) continue;
 
 			byte jour = (byte)ChronoUnit.DAYS.between(debut, intersection.getDebut());
@@ -167,7 +208,7 @@ public class Edt extends HttpServlet {
 			{				
 				if (heure < heuresJourMax) 
 				{
-					squelette_table[jour][heure] = i;
+					squelette_table[jour][heure] = k;
 					heure++;
 				}
 				else
@@ -184,15 +225,4 @@ public class Edt extends HttpServlet {
 		
 		return squelette_table;
 	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
 }

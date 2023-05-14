@@ -34,11 +34,11 @@
 			<tr>
 				<th>${heure + plage.heureDebut}h00</th>
 				<c:forEach var="jour" begin="0" end="${plage.dureeJours - 1}">
-					<c:set var="index" value="${squelette[jour][heure]}" />
+					<c:set var="cle" value="${squelette[jour][heure]}" />
 					<td>
-					<b>${cours[index].titre}</b>
-					<br><i>${cours[index].salle}</i>
-					<br>${cours[index].professeur}
+					<b>${cours[cle].titre}</b>
+					<br><i>${cours[cle].salle}</i>
+					<br>${cours[cle].professeur}
 					</td>
 				</c:forEach>
 			</tr>
